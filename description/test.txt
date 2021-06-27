@@ -1,0 +1,17 @@
+0 -> 3 -> 6 -> 4 -> 2 -> 0
+0 -> 1 -> 5 -> 8 -> 9 -> 0
+0 -> 7
+arr[3][6]
+
+para rota 1
+escolher aleatoriamente P vértices
+realizar a heurística de construção
+realizar o VND
+guarda o valor da solução
+
+para rota 2
+.
+.
+.
+
+Passo gerar heuristica de construção com vizinho mais próximo.
