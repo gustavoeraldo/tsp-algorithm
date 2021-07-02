@@ -24,3 +24,15 @@ And then execute it:
 ```
 
 You can try any input instance once it follows the [pattern](./instances/descricao.txt).
+
+
+## To Do list
+
+- [x] Develop heuristic building;
+
+- [ ] VND
+    - [ ] Swap
+    - [ ] 2-opt
+    - [ ] Re-insertion
+
+- [ ] ILS (metaheuristic)

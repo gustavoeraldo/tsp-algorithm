@@ -1,0 +1,19 @@
+{
+    "files.associations": {
+        "*.html": "html",
+        "fstream": "c",
+        "iostream": "c",
+        "vector": "c",
+        "stdio.h": "c",
+        "sstream": "c",
+        "array": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp",
+        "ostream": "cpp",
+        "iosfwd": "cpp"
+    }
+}
