@@ -8,13 +8,19 @@ using namespace std;
 
 class VND {
     public:
-        vector<int> route;
+        vector<vector<int>> adjacent_matrix, all_routes;
+        vector<int> solutions;
 
     VND();
     ~VND();
 
-    void swap();
-    void two_opt();
-    void re_insertion();
-    
+    void set_adjacent_matrix(vector<vector<int>> adjacent_matrix);
+    void set_all_routes(vector<vector<int>> all_routes);
+    void set_initial_solution(vector<int> solutions);
+
+    void swap(vector<int> *route, int *actual_solution);
+    void two_opt(vector<int> *route, int *actual_solution);
+    void re_insertion(vector<int> *route, int *actual_solution);
+    void start_vnd();
+    void display_solution();
 };

@@ -11,30 +11,38 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "vnd.h"
+
 using namespace std;
 
 void read_instance(string file_name, int* max_num_addr, int* dimension, vector<vector<int>> * adjacent_matrix);
 void create_mini_routes(int max_addr_qnt, int dimension, vector<vector<int>>* all_routes);
-void init_heuristic(vector< vector<int>> *routes, vector<vector<int>> adjacent_matrix);
+void init_heuristic(vector< vector<int>> *routes, vector<vector<int>> adjacent_matrix, vector<int> *solutions);
 int nearest_neighbour(vector<int> *route, vector<vector<int>> adjacent_matrix);
 
 void show_matrix(vector< vector<int>> adjacent_matrix);
 int myrandom (int number);
 
-void vnd();
-void swap();
-void two_opt();
-void re_insertion();
-
 
 int main(int argc, char** argv) {
     string file_name = argv[1];
     vector<vector<int>> adjacent_matrix, all_routes;
-    int max_num_addr, dimension;
+    int max_num_addr, dimension, best_solution=0;
+    vector<int> solutions;
     
     read_instance(file_name, &max_num_addr, &dimension, &adjacent_matrix);
     create_mini_routes(max_num_addr, dimension, &all_routes);
-    init_heuristic(&all_routes, adjacent_matrix);
+    init_heuristic(&all_routes, adjacent_matrix, &solutions);
+
+    for(int i : solutions) best_solution += i;
+    cout << "Best initial solution: " << best_solution << endl;
+    
+    VND local_search = VND();
+    local_search.set_adjacent_matrix(adjacent_matrix);
+    local_search.set_all_routes(all_routes);
+    local_search.set_initial_solution(solutions);
+
+    local_search.start_vnd();
 
     adjacent_matrix.clear();
     all_routes.clear();
@@ -52,7 +60,9 @@ void read_instance( string file_name, int* max_num_addr,
     int line, v_time, cost;
 
     line = 0;
-    root_path = "/home/gustavo/Downloads/P9/APA/tsp-algorithm/instancias_apa_cup/";
+    // root_path = "/home/gustavo/Downloads/P9/APA/tsp-algorithm/instancias_apa_cup/";
+    root_path = "/home/gustavo/Downloads/P9/APA/tsp-algorithm/instances/";
+
 
     instance_file.open(root_path + file_name);
     if (!instance_file)
@@ -105,6 +115,7 @@ void create_mini_routes(int max_addr_qnt, int dimension, vector<vector<int>>* al
         temporary_route.clear();
     }
 
+    // cout << "Initial routes:\n";
     // show_matrix(*all_routes);
 }
 
@@ -142,28 +153,30 @@ int nearest_neighbour(vector<int> *route, vector<vector<int>> adjacent_matrix){
             }
         }
         
-        // cout << "min cost:" << min_cost << "\tnode: " << *best_node << endl;
         solution += min_cost;
         best_route.push_back(*best_node);
-        
         min_cost = 9999;
         index = *best_node;
         route->erase(best_node);
     }
 
+    best_route.push_back(0);
+    *route = best_route;
     solution += adjacent_matrix.at(0).at(index);
 
+    for(int i : best_route)
+        cout << i << "->";
+    cout << "\nmini Route solution: " << solution << endl;
     return solution;
 }
 
-void init_heuristic(vector< vector<int>> *routes, vector<vector<int>> adjacent_matrix){
+void init_heuristic(vector< vector<int>> *routes, vector<vector<int>> adjacent_matrix, vector<int> *solutions){
     vector<int>::iterator it;
     vector< vector<int>>::iterator line_iter;
     int best_solution = 0;
     
     for (line_iter = routes->begin(); line_iter != routes->end(); line_iter++){
-        best_solution += nearest_neighbour(&(*line_iter), adjacent_matrix);
+        best_solution = nearest_neighbour(&(*line_iter), adjacent_matrix);
+        solutions->push_back(best_solution);
     }
-
-    cout << "Best solution: " << best_solution << endl;
 }
