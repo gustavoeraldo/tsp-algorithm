@@ -43,9 +43,6 @@ int main(int argc, char** argv) {
     local_search.set_initial_solution(solutions);
 
     local_search.start_vnd();
-
-    adjacent_matrix.clear();
-    all_routes.clear();
     return 0;
 }
 
@@ -114,7 +111,6 @@ void create_mini_routes(int max_addr_qnt, int dimension, vector<vector<int>>* al
         all_routes->push_back(temporary_route);
         temporary_route.clear();
     }
-
     // cout << "Initial routes:\n";
     // show_matrix(*all_routes);
 }

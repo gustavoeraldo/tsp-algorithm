@@ -24,15 +24,15 @@ void VND::set_initial_solution(vector<int> solutions){
     this->solutions = solutions;
 }
 
-
 void VND::start_vnd(){
     vector<int>::iterator it;
     vector< vector<int>>::iterator line_iter;
     int i = 0;
 
     for (line_iter = this->all_routes.begin(); line_iter != this->all_routes.end(); line_iter++){
-        // this->re_insertion(&(*line_iter), &this->solutions.at(i));
         // this->swap(&(*line_iter), &this->solutions.at(i));
+
+        // this->re_insertion(&(*line_iter), &this->solutions.at(i));
         
         if(line_iter->size() >= 6)
             this->two_opt(&(*line_iter), &this->solutions.at(i));
@@ -86,12 +86,13 @@ void VND::swap(vector<int> *route, int *actual_solution){
 
 void VND::two_opt(vector<int> *route, int *actual_solution){
     vector<int>::iterator i, j, next_i, next_j;
-    int best_solution, cost, 
+    int best_solution, cost, route_size,
     index_i, index_j, best_i, best_j;
     
     index_i = 1;
-    index_j = index_i+3;
+    index_j = index_i + 3;
     best_solution = *actual_solution;
+    route_size = route->size() - 1;
 
     for(i = route->begin() + 1; i != route->end() - 1; i++){
         for(j = i+3; j != route->end() - 1; j++){
@@ -112,10 +113,10 @@ void VND::two_opt(vector<int> *route, int *actual_solution){
                     best_j = index_j;
                     next_i = i; 
                     next_j = j;
-                    cout << "\n\nBest i node: " << *i << endl;
-                    cout << "\n\nBest j node: " << *j << endl;
-                    cout << "\n\nBest i index: " << best_i << endl;
-                    cout << "\n\nBest j index: " << best_j << endl;
+                    // cout << "\n\nBest i node: " << *i << endl;
+                    // cout << "Best j node: " << *j << endl;
+                    // cout << "Best i index: " << best_i << endl;
+                    // cout << "Best j index: " << best_j << endl;
                 }
             
                 index_j++;
@@ -129,11 +130,12 @@ void VND::two_opt(vector<int> *route, int *actual_solution){
     }
 
     if (best_solution < *actual_solution){
-        cout << "Best i: " << *next_i << "\tBest j: " << *next_j << endl;
-        cout << "Index i: " << best_i << "\tIndex j: " << best_j << endl;
-        iter_swap(&route->at(best_i), &route->at(best_j));
+        // cout << "Best i: " << *next_i << "\tBest j: " << *next_j << endl;
+        // cout << "Index i: " << best_i << "\tIndex j: " << best_j << endl;
+        int distance = route_size - best_j;
+        reverse(route->begin()+best_i, route->end()-distance);
         *actual_solution = best_solution;
-        cout << "SOLUTION: " << best_solution << endl;
+        // cout << "\n\t2-OPT SOLUTION: " << best_solution << endl;
     }
 
 }
@@ -188,18 +190,17 @@ void VND::display_solution(){
     for (int i : this->solutions)
         best_solution += i;
     
-    cout << "Best solution: " << best_solution << "\nRoutes:\n";
+    cout << "Final solution: " << best_solution << "\nRoutes:\n";
+    
     for (it = this->all_routes.begin(); it != this->all_routes.end(); it ++){
-        // for (int i : *it)
-        //     cout << i << "->";
-        // cout << endl;
-        for(k = it->begin(); k != it->end()-1; k++){
-            solution += this->adjacent_matrix.at(*k).at(*(k+1));
-            // cout << "(" << *k << ", " << *(k+1) << "): " << solution << endl;
-            cout << *k << "->";
-            
-        }
-        cout << "\n";
+        for (int i : *it)
+            cout << i << "->";
+        cout << endl;
+        // for(k = it->begin(); k != it->end()-1; k++){
+        //     solution += this->adjacent_matrix.at(*k).at(*(k+1));
+        //     cout << *k << "->";   
+        // }
+        // cout << "\n";
     }
-    cout << "Real solution: " << solution;
+    // cout << "Real solution: " << solution;
 }
