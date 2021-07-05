@@ -30,14 +30,14 @@ void VND::start_vnd(){
     int i = 0;
 
     for (line_iter = this->all_routes.begin(); line_iter != this->all_routes.end(); line_iter++){
-        // this->swap(&(*line_iter), &this->solutions.at(i));
-
-        // this->re_insertion(&(*line_iter), &this->solutions.at(i));
         
+        this->re_insertion(&(*line_iter), &this->solutions.at(i));
         if(line_iter->size() >= 6)
             this->two_opt(&(*line_iter), &this->solutions.at(i));
+        this->swap(&(*line_iter), &this->solutions.at(i));
         i++;        
     }
+    // this->two_opt(&this->all_routes.front(), &this->solutions.front());
 
     this->display_solution();
 }
@@ -127,6 +127,7 @@ void VND::two_opt(vector<int> *route, int *actual_solution){
         }
         index_i++;
         index_j = index_i+3;
+        if (index_i >= route->size()-2) break;
     }
 
     if (best_solution < *actual_solution){

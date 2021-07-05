@@ -16,12 +16,12 @@
 using namespace std;
 
 void read_instance(string file_name, int* max_num_addr, int* dimension, vector<vector<int>> * adjacent_matrix);
-void create_mini_routes(int max_addr_qnt, int dimension, vector<vector<int>>* all_routes);
-void init_heuristic(vector< vector<int>> *routes, vector<vector<int>> adjacent_matrix, vector<int> *solutions);
-int nearest_neighbour(vector<int> *route, vector<vector<int>> adjacent_matrix);
+void heuristic_biulding(
+    vector< vector<int>> *routes, vector<vector<int>> adjacent_matrix, 
+    int max_num_addr, int dimension, vector<int> *solutions);
 
 void show_matrix(vector< vector<int>> adjacent_matrix);
-int myrandom (int number);
+void show_routes(vector< vector<int>> routes);
 
 
 int main(int argc, char** argv) {
@@ -31,8 +31,8 @@ int main(int argc, char** argv) {
     vector<int> solutions;
     
     read_instance(file_name, &max_num_addr, &dimension, &adjacent_matrix);
-    create_mini_routes(max_num_addr, dimension, &all_routes);
-    init_heuristic(&all_routes, adjacent_matrix, &solutions);
+    heuristic_biulding(
+        &all_routes, adjacent_matrix, max_num_addr, dimension, &solutions);
 
     for(int i : solutions) best_solution += i;
     cout << "Best initial solution: " << best_solution << endl;
@@ -41,8 +41,8 @@ int main(int argc, char** argv) {
     local_search.set_adjacent_matrix(adjacent_matrix);
     local_search.set_all_routes(all_routes);
     local_search.set_initial_solution(solutions);
-
     local_search.start_vnd();
+
     return 0;
 }
 
@@ -59,7 +59,6 @@ void read_instance( string file_name, int* max_num_addr,
     line = 0;
     // root_path = "/home/gustavo/Downloads/P9/APA/tsp-algorithm/instancias_apa_cup/";
     root_path = "/home/gustavo/Downloads/P9/APA/tsp-algorithm/instances/";
-
 
     instance_file.open(root_path + file_name);
     if (!instance_file)
@@ -91,32 +90,6 @@ void read_instance( string file_name, int* max_num_addr,
     instance_file.close();
 }
 
-
-void create_mini_routes(int max_addr_qnt, int dimension, vector<vector<int>>* all_routes){
-    srand (unsigned (time(0)));
-    vector<int> random_vec, temporary_route;
-
-    for (int i = 1; i < dimension; i++) random_vec.push_back(i);
-    random_shuffle(random_vec.begin(), random_vec.end(), myrandom);
-
-    while (random_vec.size() != 0){
-        temporary_route.push_back(0);
-        for(int i = 0; i < max_addr_qnt; i++){ 
-            if (random_vec.size() == 0) break;
-
-            temporary_route.push_back(random_vec.back());
-            random_vec.pop_back();            
-        }
-
-        all_routes->push_back(temporary_route);
-        temporary_route.clear();
-    }
-    // cout << "Initial routes:\n";
-    // show_matrix(*all_routes);
-}
-
-int myrandom (int i) { return rand()%i;}
-
 void show_matrix(vector< vector<int>> adjacent_matrix){
     vector<int>::iterator it;
     vector< vector<int>>::iterator line_iter;
@@ -128,51 +101,58 @@ void show_matrix(vector< vector<int>> adjacent_matrix){
     }
 }
 
-int nearest_neighbour(vector<int> *route, vector<vector<int>> adjacent_matrix){
-    vector<int>::iterator i, j, best_node;
-    vector<int> best_route;
-    int index, cost, solution, min_cost = 9999;
+void heuristic_biulding(
+    vector< vector<int>> *routes, vector<vector<int>> adjacent_matrix, 
+    int max_num_addr, int dimension, vector<int> *solutions) 
+    {
+    vector<int>::iterator it, remove_node;
+    vector<int> matrix, temporary_route;
+    int solution, min_cost = 9999, next_node_cost, next_node, next_i, solution_sum = 0;
     
-    solution = cost = 0;
-    i = route->begin();
-    index = *route->begin();
-    route->erase(i);
-    best_route.push_back(index);
+    for (int i = 1; i < dimension; i++) matrix.push_back(i);
 
-    while(route->size() != 0){
-        for (j = route->begin(); j != route->end(); j++){
-            cost = adjacent_matrix.at(index).at(*j);
-            
-            if (cost < min_cost){
-                min_cost = cost;
-                best_node = j;
+    while (matrix.size() != 0){
+        temporary_route.push_back(0);
+        next_i = 0;
+
+        while (temporary_route.size() <= max_num_addr) {
+            if (matrix.size() == 0) break;
+
+            for(it = matrix.begin(); it != matrix.end(); it ++) {
+                next_node_cost = adjacent_matrix.at(*it).at(next_i);
+
+                if(next_node_cost < min_cost) {
+                    min_cost = next_node_cost;
+                    next_node = *it;
+                    remove_node = it;
+                }
             }
+            solution_sum += min_cost;
+            next_i = next_node;
+            min_cost = 9999;
+            temporary_route.push_back(next_node);
+            matrix.erase(remove_node);
         }
-        
-        solution += min_cost;
-        best_route.push_back(*best_node);
-        min_cost = 9999;
-        index = *best_node;
-        route->erase(best_node);
+
+        // last node
+        temporary_route.push_back(0);
+        routes->push_back(temporary_route);
+        solution_sum += adjacent_matrix.at(0).at(next_i);
+        temporary_route.clear();
+
+        solutions->push_back(solution_sum);
+        solution_sum = 0;
     }
 
-    best_route.push_back(0);
-    *route = best_route;
-    solution += adjacent_matrix.at(0).at(index);
-
-    for(int i : best_route)
-        cout << i << "->";
-    cout << "\nmini Route solution: " << solution << endl;
-    return solution;
+    show_routes(*routes);
 }
 
-void init_heuristic(vector< vector<int>> *routes, vector<vector<int>> adjacent_matrix, vector<int> *solutions){
-    vector<int>::iterator it;
-    vector< vector<int>>::iterator line_iter;
-    int best_solution = 0;
-    
-    for (line_iter = routes->begin(); line_iter != routes->end(); line_iter++){
-        best_solution = nearest_neighbour(&(*line_iter), adjacent_matrix);
-        solutions->push_back(best_solution);
+void show_routes(vector< vector<int>> routes) {
+    vector<vector<int>>::iterator it;
+
+    for(it = routes.begin(); it != routes.end(); it ++){
+        for(int i: *it)
+            cout << i << "->";
+        cout << endl;
     }
-}
+}   
