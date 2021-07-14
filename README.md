@@ -13,14 +13,14 @@
 
 Compile the code:
 ```bash
-g++ main.cpp -o main
+g++ main.cpp vnd.cpp -o main 
 ```
 
 And then execute it:
 
 ```bash
 # ./executable file_name
-./main n10p4.txt
+./main cup1.txt
 ```
 
 You can try any input instance once it follows the [pattern](./instances/descricao.txt).
@@ -30,9 +30,9 @@ You can try any input instance once it follows the [pattern](./instances/descric
 
 - [x] Develop heuristic building;
 
-- [ ] VND
-    - [ ] Swap
-    - [ ] 2-opt
-    - [ ] Re-insertion
+- [X] VND
+    - [X] Swap
+    - [X] 2-opt
+    - [X] Re-insertion
 
 - [ ] ILS (metaheuristic)
