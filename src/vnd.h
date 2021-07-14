@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <vector>
 #include <algorithm> 
+#include <ctime>        // std::time
+#include <cstdlib> 
 
 using namespace std;
 
@@ -22,5 +24,6 @@ class VND {
     void two_opt(vector<int> *route, int *actual_solution);
     void re_insertion(vector<int> *route, int *actual_solution);
     void start_vnd();
+    static int shuffle_vector(int value);
     void display_solution();
 };

@@ -24,21 +24,37 @@ void VND::set_initial_solution(vector<int> solutions){
     this->solutions = solutions;
 }
 
+int VND::shuffle_vector(int value){ return rand()%value; }
+
 void VND::start_vnd(){
     vector<int>::iterator it;
     vector< vector<int>>::iterator line_iter;
-    int i = 0;
+    vector<int> neighbor_structure = {1, 2, 3};
+    int i = 0, k;
 
     for (line_iter = this->all_routes.begin(); line_iter != this->all_routes.end(); line_iter++){
+        random_shuffle( neighbor_structure.begin(), neighbor_structure.end(), shuffle_vector );
+        while (neighbor_structure.size() != 0){
+            k = neighbor_structure.back();
+            neighbor_structure.pop_back();
+            
+            switch (k){
+                case 1:
+                    this->swap(&(*line_iter), &this->solutions.at(i)); 
+                    break;
+                case 2:
+                    this->two_opt(&(*line_iter), &this->solutions.at(i));
+                    break;
+                case 3:
+                    this->re_insertion(&(*line_iter), &this->solutions.at(i));
+                    break;
+            }
+        }
         
-        this->re_insertion(&(*line_iter), &this->solutions.at(i));
-        if(line_iter->size() >= 6)
-            this->two_opt(&(*line_iter), &this->solutions.at(i));
-        this->swap(&(*line_iter), &this->solutions.at(i));
+        neighbor_structure = {1, 2, 3};
         i++;        
     }
-    // this->two_opt(&this->all_routes.front(), &this->solutions.front());
-
+    
     this->display_solution();
 }
 
@@ -106,7 +122,7 @@ void VND::two_opt(vector<int> *route, int *actual_solution){
                     this->adjacent_matrix.at(*(j)).at(*(i-1)) + 
                     this->adjacent_matrix.at(*(i)).at(*(j+1))
                 );
-                
+            
                 if (cost < best_solution){
                     best_solution = cost;
                     best_i = index_i;
@@ -195,8 +211,8 @@ void VND::display_solution(){
     
     for (it = this->all_routes.begin(); it != this->all_routes.end(); it ++){
         for (int i : *it)
-            cout << i << "->";
-        cout << endl;
+            cout << i << ", ";
+        cout << ";" << endl;
         // for(k = it->begin(); k != it->end()-1; k++){
         //     solution += this->adjacent_matrix.at(*k).at(*(k+1));
         //     cout << *k << "->";   
@@ -205,3 +221,5 @@ void VND::display_solution(){
     }
     // cout << "Real solution: " << solution;
 }
+
+

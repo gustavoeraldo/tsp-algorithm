@@ -16,7 +16,7 @@
 using namespace std;
 
 void read_instance(string file_name, int* max_num_addr, int* dimension, vector<vector<int>> * adjacent_matrix);
-void heuristic_biulding(
+void heuristic_building(
     vector< vector<int>> *routes, vector<vector<int>> adjacent_matrix, 
     int max_num_addr, int dimension, vector<int> *solutions);
 
@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     vector<int> solutions;
     
     read_instance(file_name, &max_num_addr, &dimension, &adjacent_matrix);
-    heuristic_biulding(
+    heuristic_building(
         &all_routes, adjacent_matrix, max_num_addr, dimension, &solutions);
 
     for(int i : solutions) best_solution += i;
@@ -57,8 +57,8 @@ void read_instance( string file_name, int* max_num_addr,
     int line, v_time, cost;
 
     line = 0;
-    // root_path = "/home/gustavo/Downloads/P9/APA/tsp-algorithm/instancias_apa_cup/";
-    root_path = "/home/gustavo/Downloads/P9/APA/tsp-algorithm/instances/";
+    root_path = "/home/gustavo/Downloads/P9/APA/tsp-algorithm/instancias_apa_cup/";
+    // root_path = "/home/gustavo/Downloads/P9/APA/tsp-algorithm/instances/";
 
     instance_file.open(root_path + file_name);
     if (!instance_file)
@@ -101,13 +101,13 @@ void show_matrix(vector< vector<int>> adjacent_matrix){
     }
 }
 
-void heuristic_biulding(
+void heuristic_building(
     vector< vector<int>> *routes, vector<vector<int>> adjacent_matrix, 
     int max_num_addr, int dimension, vector<int> *solutions) 
     {
     vector<int>::iterator it, remove_node;
     vector<int> matrix, temporary_route;
-    int solution, min_cost = 9999, next_node_cost, next_node, next_i, solution_sum = 0;
+    int solution, min_cost = 99999, next_node_cost, next_node, next_i, solution_sum = 0;
     
     for (int i = 1; i < dimension; i++) matrix.push_back(i);
 
@@ -127,9 +127,10 @@ void heuristic_biulding(
                     remove_node = it;
                 }
             }
+            
             solution_sum += min_cost;
             next_i = next_node;
-            min_cost = 9999;
+            min_cost = 99999;
             temporary_route.push_back(next_node);
             matrix.erase(remove_node);
         }
